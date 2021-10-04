@@ -16,8 +16,8 @@ class LineBuilder:
 
     def __call__(self, event):
         print ('click ', event)
-        coll_x = event.xdata
-        coll_y = event.ydata
+        coll_x = round(event.xdata, 2)
+        coll_y = round(event.ydata, 2)
         if event.button is MouseButton.RIGHT:
             for x, y in zip(self.xs, self.ys):
                 if (x-event.xdata)*(x-event.xdata) + (y-event.ydata)*(y-event.ydata) <= self.coll*self.coll:
@@ -30,7 +30,7 @@ class LineBuilder:
         if event.button is MouseButton.LEFT:
             color = color_gen()
             fig_data.append(list((self.xs, self.ys)))
-            self.file.write("---\n")
+            self.file.write("\n")
             line, = plt.plot([coll_x], [coll_y], c=color, marker='o')
             self.xs = [coll_x]
             self.ys = [coll_y]
@@ -46,11 +46,10 @@ def color_gen():
 file = open('data/fig.txt', 'w')
 fig = plt.figure()
 ax = fig.add_subplot()
-plt.xlim(-1, 1)
-plt.ylim(-1, 1)
-file.write("---\n")
-file.write(str(0) + ' ' + str(0) + '\n')
-line, = plt.plot([0], [0], c=color_gen(), marker = 'o')  # empty line
-linebuilder = LineBuilder(line, plt, file,  0.1)
+plt.xlim(0, 10)
+plt.ylim(0, 10)
+file.write(str(5) + ' ' + str(5) + '\n')
+line, = plt.plot([5], [5], c=color_gen(), marker = 'o')  # empty line
+linebuilder = LineBuilder(line, plt, file,  0.5)
 
 plt.show()
