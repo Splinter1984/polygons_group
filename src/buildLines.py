@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
+from matplotlib.widgets import Button
 import random
+import os
 
 fig_data = []
 
@@ -45,11 +47,20 @@ def color_gen():
 
 file = open('data/fig.txt', 'w')
 fig = plt.figure()
-ax = fig.add_subplot()
+ax = fig.add_subplot(1, 1, 1)
 plt.xlim(0, 10)
 plt.ylim(0, 10)
 file.write(str(5) + ' ' + str(5) + '\n')
 line, = plt.plot([5], [5], c=color_gen(), marker = 'o')  # empty line
 linebuilder = LineBuilder(line, plt, file,  0.5)
+
+fig2 = plt.figure()
+ax1 = fig2.add_subplot(2, 2, 1)
+def _export(event):
+    file.close()
+    os.startfile("main.exe")
+
+bcut = Button(ax1, 'Export', color='grey', hovercolor='green')
+bcut.on_clicked(_export)
 
 plt.show()
