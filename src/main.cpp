@@ -3,15 +3,46 @@
 #include <tuple>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <random>
 
-template<typename T>
-void read_lines(std::ifstream& file, std::vector<std::pair<T, T>>* vec)
+class Segment
 {
-    T right, left;
+    public:
+        Segment(const float start_x, const float start_y, const float end_x, const float end_y)
+        {
+            set_start(start_x, start_y);
+            set_end(end_x, end_y);
+        }
+        const std::pair<float, float> start()
+        {
+            return _start;
+        }
+        void set_start(const float start_x, const float start_y)
+        {
+            _start = std::make_pair(start_x, start_y);
+        }
+        const std::pair<float, float> end()
+        {
+            return _end;
+        }
+        void set_end(const float end_x, const float end_y)
+        {
+            _end = std::make_pair(end_x, end_y);
+        }
+
+    private:
+        std::pair<float, float> _start;
+        std::pair<float, float> _end;
+};
+
+void read_lines(std::ifstream& file, std::vector<Segment>* vec)
+{
+    float startx, starty, endx, endy;
     while(!file.eof())
     {
-        file >> right >> left;
-        vec->push_back(std::make_pair(right, left));
+        file >> startx >> starty >> endx >> endy;
+        vec->push_back(Segment(startx, starty, endx, endy));
     }
 }
 
@@ -31,10 +62,20 @@ int main()
         file.close();
         return 0;
     }
-    std::vector<std::pair<float, float>> vec;
+
+    std::vector<Segment> vec;
     read_lines(file, &vec);
-    for (const auto& item: vec)
-        std::cout<< item.first << "|" << item.second << std::endl;
+    for (auto item: vec)
+        std::cout << item.start().first << " " << item.start().second << " | "
+                << item.end().first << " " << item.end().second << std::endl;
+    
+
+    auto rng = std::default_random_engine {};
+    std::shuffle(vec.begin(), vec.end(), rng);
+    std::cout << std::endl;
+    for (auto item: vec)
+    std::cout << item.start().first << " " << item.start().second << " | "
+            << item.end().first << " " << item.end().second << std::endl;
 
     return 0;
 }
