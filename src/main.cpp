@@ -3,57 +3,8 @@
 #include <random>
 #include <vector>
 #include <fstream>
-
-class Point2D
-{
-    private:
-        float _x;
-        float _y;
-    
-    public:
-        Point2D(){}
-        Point2D(const float x, const float y): _x(x), _y(y){}
-        float x() const;
-        void set_x(const float x);
-        float y() const ;
-        void set_y(const float y);
-
-        friend bool operator==(const Point2D& lv, const Point2D& rv);
-        friend bool operator!=(const Point2D& lv, const Point2D& rv);
-        friend std::ostream& operator<<(std::ostream& out, const Point2D& val);
-};
-
-float Point2D::x() const {return _x;}
-void Point2D::set_x(const float x) {_x = x;}
-float Point2D::y() const {return _y;}
-void Point2D::set_y(const float y) {_y = y;}
-bool operator==(const Point2D& lv, const Point2D& rv) {return lv._x == rv._x && lv._y == rv._y;}
-bool operator!=(const Point2D& lv, const Point2D& rv) {return !(lv == rv);}
-std::ostream& operator<<(std::ostream& out, const Point2D& val)
-{
-    return out << val.x() << " " << val.y();
-}
-
-class Segment2D
-{
-    private:
-        Point2D _start;
-        Point2D _end;
-
-    public:
-        Segment2D() {}
-        Segment2D(const Point2D& start, const Point2D& end): _start(start.x(), start.y()), _end(end.x(), end.y()){}  
-        Segment2D(const float x1, const float y1, const float x2, const float y2): _start(x1, y1), _end(x2, y2){}
-        Point2D start() const;
-        void set_start(const float x, const float y);
-        Point2D end() const;
-        void set_end(const float x, const float y);
-};
-
-Point2D Segment2D::start() const {return _start;}
-void Segment2D::set_start(const float x, const float y) {_start.set_x(x); _start.set_y(y);}
-Point2D Segment2D::end() const {return _end;}
-void Segment2D::set_end(const float x, const float y) {_end.set_x(x); _end.set_y(y);}
+#include "../include/point2d.h"
+#include "../include/segment2d.h"
 
 std::vector<std::vector<Segment2D>> find_figure2D(const std::vector<Segment2D>& vec)
 {
@@ -112,7 +63,7 @@ void read_lines(std::ifstream& file, std::vector<Segment2D>* vec)
 int main()
 {
     std::ifstream file;
-    std::string filepath = "data/fig.txt";
+    std::string filepath = "../data/fig.txt";
     try
     {
         file.open(filepath, std::ifstream::ios_base::out | 
