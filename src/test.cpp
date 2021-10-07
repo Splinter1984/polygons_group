@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <random>
 #include <vector>
 #include <fstream>
 
@@ -89,14 +90,25 @@ std::vector<std::vector<Segment2D>> find_figure2D(const std::vector<Segment2D>& 
         std::vector<Segment2D> fig;
         Segment2D start_val = *tmpvec.begin();
         auto find_it = tmpvec.begin();
-        Segment2D end_val = start_val;
+        Segment2D end_val = *tmpvec.begin();
         while(start_val.start() != end_val.end())
         {
-            fig.push_back(Segment2D(end_val.start(), end_val.end()));
-            find_it = std::find_if(tmpvec.begin(), tmpvec.end(), [&find_it](const Segment2D& item)
-                                {return find_it->end() == item.start();});
-            end_val = *find_it;
+            if (!tmpvec.empty())
+            {
+                tmpvec.erase(find_it);
+                fig.push_back(Segment2D(end_val.start(), end_val.end()));    
+                find_it = std::find_if(tmpvec.begin(), tmpvec.end(), [&end_val](const Segment2D& item)
+                                {return end_val.end() == item.start();});
+                end_val = *find_it;
+            }else{
+                break;
+            }
         }
+        tmpvec.erase(find_it);
+        fig.push_back(Segment2D(end_val.start(), end_val.end()));
+        std::cout << "----" << std::endl; 
+        for (const auto& it: fig)
+            std::cout << it.start() << "|" << it.end() << std::endl;
         result.push_back(fig);
     }
 
@@ -148,10 +160,12 @@ int main()
     for (const auto& item: segments)
         std::cout << item.start() << " | " << item.end() << std::endl;
     
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(segments), std::end(segments), rng);
     std::vector<std::vector<Segment2D>> result = find_figure2D(segments);
     for (const auto& item: result)
     {
-        std::cout << "group#1" << std::endl;
+        std::cout << "#group" << std::endl;
         for (const auto& it: item)
             std::cout << it.start() << " | " << it.end() << std::endl;
     }
