@@ -19,6 +19,7 @@ class Point2D
 
         friend bool operator==(const Point2D& lv, const Point2D& rv);
         friend bool operator!=(const Point2D& lv, const Point2D& rv);
+        friend std::ostream& operator<<(std::ostream& out, const Point2D& val);
 };
 
 float Point2D::x() const {return _x;}
@@ -27,6 +28,10 @@ float Point2D::y() const {return _y;}
 void Point2D::set_y(const float y) {_y = y;}
 bool operator==(const Point2D& lv, const Point2D& rv) {return lv._x == rv._x && lv._y == rv._y;}
 bool operator!=(const Point2D& lv, const Point2D& rv) {return !(lv == rv);}
+std::ostream& operator<<(std::ostream& out, const Point2D& val)
+{
+    return out << val.x() << " " << val.y();
+}
 
 class Segment2D
 {
@@ -88,7 +93,6 @@ std::vector<std::vector<Segment2D>> find_figure2D(const std::vector<Segment2D>& 
         while(start_val.start() != end_val.end())
         {
             fig.push_back(Segment2D(end_val.start(), end_val.end()));
-            tmpvec.erase(find_it);
             find_it = std::find_if(tmpvec.begin(), tmpvec.end(), [&find_it](const Segment2D& item)
                                 {return find_it->end() == item.start();});
             end_val = *find_it;
@@ -142,19 +146,14 @@ int main()
     std::vector<Segment2D> segments;
     read_lines(file, &segments);
     for (const auto& item: segments)
-        std::cout << item.start().x() << " "
-                << item.start().y() << " | "
-                << item.end().x() << " "
-                << item.end().y() << std::endl;
+        std::cout << item.start() << " | " << item.end() << std::endl;
+    
     std::vector<std::vector<Segment2D>> result = find_figure2D(segments);
     for (const auto& item: result)
     {
         std::cout << "group#1" << std::endl;
         for (const auto& it: item)
-            std::cout << it.start().x() << " "
-                    << it.start().y() << " | "
-                    << it.end().x() << " "
-                    << it.end().y() << std::endl;
+            std::cout << it.start() << " | " << it.end() << std::endl;
     }
 
     return 0;
