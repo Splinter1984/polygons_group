@@ -3,8 +3,8 @@
 #include <random>
 #include <vector>
 #include <fstream>
-#include "../include/point2d.h"
-#include "../include/segment2d.h"
+#include "point2d.h"
+#include "segment2d.h"
 
 std::vector<std::vector<Segment2D>> find_figure2D(const std::vector<Segment2D>& vec)
 {

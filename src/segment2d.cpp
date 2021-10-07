@@ -1,4 +1,4 @@
-#include "segment2d.h"
+#include "../include/segment2d.h"
 
 Point2D Segment2D::start() const 
 {
