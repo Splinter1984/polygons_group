@@ -75,21 +75,23 @@ int Figure2D::size() const
     return _segments.size();
 }
 
-std::vector<Figure2D> find_figure2D(const std::vector<Segment2D>& vec)
+std::vector<std::vector<Segment2D>> find_figure2D(const std::vector<Segment2D>& vec)
 {
-    std::vector<Figure2D> result;
-    std::vector<Segment2D> tmpvec = vec;
+    std::vector<std::vector<Segment2D>> result;
+    std::vector<Segment2D> tmpvec(vec);
     while(!tmpvec.empty())
     {
-        Figure2D fig;
-        auto key = tmpvec.begin();
-        auto value = tmpvec.begin()+1;
-        while(key->start() != value->end())
+        std::vector<Segment2D> fig;
+        Segment2D start_val = *tmpvec.begin();
+        auto find_it = tmpvec.begin();
+        Segment2D end_val = start_val;
+        while(start_val.start() != end_val.end())
         {
-            fig.append_segment(*value);
-            tmpvec.erase(value);
-            value = std::find_if(tmpvec.begin(), tmpvec.end(), [&value](Segment2D& item)
-                                {return value->end() == item.start();});
+            fig.push_back(Segment2D(end_val.start(), end_val.end()));
+            tmpvec.erase(find_it);
+            find_it = std::find_if(tmpvec.begin(), tmpvec.end(), [&find_it](const Segment2D& item)
+                                {return find_it->end() == item.start();});
+            end_val = *find_it;
         }
         result.push_back(fig);
     }
@@ -144,11 +146,11 @@ int main()
                 << item.start().y() << " | "
                 << item.end().x() << " "
                 << item.end().y() << std::endl;
-    std::vector<Figure2D> result = find_figure2D(segments);
+    std::vector<std::vector<Segment2D>> result = find_figure2D(segments);
     for (const auto& item: result)
     {
         std::cout << "group#1" << std::endl;
-        for (const auto& it: item.get_segments())
+        for (const auto& it: item)
             std::cout << it.start().x() << " "
                     << it.start().y() << " | "
                     << it.end().x() << " "

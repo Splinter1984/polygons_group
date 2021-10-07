@@ -1,13 +1,15 @@
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
-from matplotlib.widgets import Button
-import random
-import os
+#   from matplotlib.widgets import Button
+#   import random
+#   import os
 
-fig_data = []
+POINT_RADIUS = 0.5
+OUTPUT_FILEPATH = 'data/fig.txt'
+DRAW_COLOR = 'black'
 
 class LineBuilder:
-    def __init__(self, line, plt, file, coll=0.01):
+    def __init__(self, line, plt, file, coll=0.1):
         self.plt = plt
         self.coll = coll
         self.line = line
@@ -30,10 +32,7 @@ class LineBuilder:
             self.line.set_data(self.xs, self.ys)
 
         if event.button is MouseButton.LEFT:
-            color = color_gen()
-            fig_data.append(list((self.xs, self.ys)))
-            self.file.write("\n")
-            line, = plt.plot([coll_x], [coll_y], c=color, marker='o')
+            line, = plt.plot([coll_x], [coll_y], c=DRAW_COLOR, marker='o')
             self.xs = [coll_x]
             self.ys = [coll_y]
             self.line = line
@@ -42,16 +41,14 @@ class LineBuilder:
         self.line.figure.canvas.draw()
 
 
-def color_gen():
-    return (random.random(), random.random(), random.random())
-
-file = open('data/fig.txt', 'w')
+file = open(OUTPUT_FILEPATH, 'w')
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
+plt.title("use Mouse RIGHT for build line/ LEFT for set new point")
 plt.xlim(0, 10)
 plt.ylim(0, 10)
 file.write(str(5) + ' ' + str(5) + '\n')
-line, = plt.plot([5], [5], c=color_gen(), marker = 'o')  # empty line
-linebuilder = LineBuilder(line, plt, file,  0.5)
+line, = plt.plot([5], [5], c=DRAW_COLOR, marker = 'o')
+linebuilder = LineBuilder(line, plt, file, POINT_RADIUS)
 
 plt.show()
