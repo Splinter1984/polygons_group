@@ -79,17 +79,19 @@ int main()
 
     std::vector<Segment2D> segments;
     read_lines(file, &segments);
-    for (const auto& item: segments)
-        std::cout << item.start() << " | " << item.end() << std::endl;
+    /*for (const auto& item: segments)
+        std::cout << item.start() << " | " << item.end() << std::endl;*/
     
     auto rng = std::default_random_engine {};
     std::shuffle(std::begin(segments), std::end(segments), rng);
     std::vector<std::vector<Segment2D>> result = find_figure2D(segments);
+    size_t count = 1;
     for (const auto& item: result)
     {
-        std::cout << "#group" << std::endl;
+        std::cout << "#group" << " " << count << std::endl;
         for (const auto& it: item)
             std::cout << it.start() << " | " << it.end() << std::endl;
+        count++;
     }
 
     return 0;
