@@ -14,6 +14,10 @@ cd broken_lines/scripts/
 python buildLines.py
 ```
 ```bash
-cd broken_lines/build
+cd broken_lines/build/
 ./broken_lines
+```
+```bash
+cd broken_lines/scripts/
+python viewLines.py
 ```
