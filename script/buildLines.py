@@ -5,7 +5,7 @@ from matplotlib.backend_bases import MouseButton
 #   import os
 
 POINT_RADIUS = 0.5
-OUTPUT_FILEPATH = '../data/fig.txt'
+OUTPUT_FILEPATH = '../data/input.txt'
 DRAW_COLOR = 'black'
 
 class LineBuilder:

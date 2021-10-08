@@ -60,14 +60,24 @@ void read_lines(std::ifstream& file, std::vector<Segment2D>* vec)
     }
 }
 
+void write_lines(std::ofstream& outfile, const std::vector<std::vector<Segment2D>>& vec)
+{
+    for (const auto& item: vec)
+    {
+        for (const auto& it: item)
+            outfile << it.start() << '\n';
+        outfile << (item.end()-1)->end() << '\n';
+        outfile << '\n';
+    }
+}
+
 int main()
 {
     std::ifstream file;
-    std::string filepath = "../data/fig.txt";
+    std::string filepath = "../data/input.txt";
     try
     {
-        file.open(filepath, std::ifstream::ios_base::out | 
-                std::ifstream::ios_base::in);
+        file.open(filepath);
         if(!file.is_open())
             throw std::string("error to open file: " + filepath);
 
@@ -79,18 +89,37 @@ int main()
 
     std::vector<Segment2D> segments;
     read_lines(file, &segments);
-    for (const auto& item: segments)
-        std::cout << item.start() << " | " << item.end() << std::endl;
+    /*for (const auto& item: segments)
+        std::cout << item.start() << " | " << item.end() << std::endl;*/
     
     auto rng = std::default_random_engine {};
     std::shuffle(std::begin(segments), std::end(segments), rng);
     std::vector<std::vector<Segment2D>> result = find_figure2D(segments);
+    size_t count = 1;
     for (const auto& item: result)
     {
-        std::cout << "#group" << std::endl;
+        std::cout << "#group " << count << std::endl;
         for (const auto& it: item)
             std::cout << it.start() << " | " << it.end() << std::endl;
+        count++;
     }
+    file.close();
+
+    std::ofstream outFile;
+    std::string outfilepath = "../data/output.txt";
+    try
+    {
+        outFile.open(outfilepath);
+        if(!outFile.is_open())
+            throw std::string("error to open file: " + outfilepath);
+
+    } catch(const std::string& ex) {
+        std::cerr << ex << std::endl;
+        outFile.close();
+        return 0;
+    }
+    write_lines(outFile, result);
+    outFile.close();
 
     return 0;
 }
