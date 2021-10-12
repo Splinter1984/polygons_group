@@ -24,4 +24,5 @@ for line in file:
 
 for fig in data:
     plt.plot(fig[0], fig[1], color=random_color(), marker='o')
+    plt.fill(fig[0], fig[1], color='gray')
 plt.show()
