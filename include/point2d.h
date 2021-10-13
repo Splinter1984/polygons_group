@@ -1,20 +1,25 @@
 #pragma once
 #include <iostream>
+
 class Point2D
 {
     private:
-        float _x;
-        float _y;
+        int _x;
+        int _y;
     
     public:
-        Point2D(){}
-        Point2D(const float x, const float y): _x(x), _y(y){}
-        float x() const;
-        void set_x(const float x);
-        float y() const ;
-        void set_y(const float y);
+        Point2D();
+        Point2D(const int x, const int y);
+        Point2D(const Point2D& point);
 
-        friend bool operator==(const Point2D& lv, const Point2D& rv);
-        friend bool operator!=(const Point2D& lv, const Point2D& rv);
-        friend std::ostream& operator<<(std::ostream& out, const Point2D& val);
+        int x() const;
+        void set_x(const int x);
+        int y() const ;
+        void set_y(const int y);
+
+        Point2D& operator=(const Point2D& point);
+        bool operator==(const Point2D& point);
+        bool operator!=(const Point2D& point);
+        
+        friend std::ostream& operator<<(std::ostream& out, const Point2D& point);
 };
