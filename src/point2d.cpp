@@ -2,12 +2,10 @@
 
 Point2D::Point2D()
 {}
+Point2D::Point2D(const Point2D& point): Point2D(point.x(), point.y())
+{}
 Point2D::Point2D(const int x, const int y): _x(x), _y(y)
 {}
-Point2D::Point2D(const Point2D& point)
-{
-    Point2D(point.x(), point.y());
-}
 
 int Point2D::x() const 
 {

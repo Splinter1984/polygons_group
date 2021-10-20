@@ -8,22 +8,26 @@
 
 void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
 {
-    Polygon2D *polygon;
-    float startx, starty, endx, endy;
+    std::vector<Segment2D> polygon;
+    Segment2D* segment;
+    int startx, starty, endx, endy;
     file >> startx >> starty;
-    float trigx, trigy;
+    int trigx, trigy;
     trigx = startx;
     trigy = starty;
     while(file >> endx >> endy)
     {
-        polygon->_border.push_back(Segment2D(int(startx), int(starty), int(endx), int(endy)));
+        segment = new Segment2D(startx, starty, endx, endy);
+        polygon.push_back(*segment);
+        std::cout << *segment << std::endl;
+        std::cout << polygon.back() << std::endl;
         if (trigx == endx && trigy == endy)
         {
             file >> startx >> starty;
             trigx = startx;
             trigy = starty;
-            polygons->push_back(*polygon);
-            polygon = new Polygon2D;
+            polygons->push_back(Polygon2D(0, polygon));
+            polygon.clear();
         }
         else{
             startx = endx;
@@ -55,8 +59,8 @@ int main()
     for (const auto& polygon: polygons)
     {
         std::cout << "#polygon " << count << std::endl;
-        for (const auto& segment: polygon._border)
-            std::cout << segment << std::endl;
+        for (auto it = polygon.border_begin(); it != polygon.border_end(); it++)
+            std::cout << *it << std::endl;
         count++;
     }
     file.close();
