@@ -54,14 +54,26 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
     }
 }
 
-void calc_layers(std::vector<Polygon2D>* polygons)
+void calc_layers(std::vector<Polygon2D>& polygons)
 {
-    for (auto polygon: *polygons)
+    for (auto polygon=polygons.begin(); polygon!=polygons.end(); polygon++)
     {
-        polygon.calc_layer(*polygons);
+        polygon->calc_layer(polygons);
     #ifdef BL_DEBUG
-        std::cout << "layer: "<< polygon.layer() << std::endl;
+        std::cout << "layer: "<< polygon->layer() << std::endl;
     #endif
+    }
+}
+
+void write_polygons(std::ofstream& file,  std::vector<Polygon2D>& polygons)
+{
+    for (auto polygon: polygons)
+    {
+        file << "layer:" << polygon.layer() << '\n';
+        for (auto segment: polygon.border())
+            file << segment.start() << '\n';
+        file << polygon.border_begin()->start() << '\n';
+        file << '\n';
     }
 }
 
@@ -83,23 +95,42 @@ int main()
 
     std::vector<Polygon2D> polygons;
     read_lines(file, &polygons);
-    
-#ifdef BL_DEBUG
 
+    calc_layers(polygons);
+    std::sort(std::begin(polygons), std::end(polygons), [](Polygon2D lv, Polygon2D rv) 
+                                                {return lv.layer() > rv.layer();});
+
+#ifdef BL_DEBUG
     size_t count = 1;
     for (const auto& polygon: polygons)
     {
-        std::cout << "#polygon " << count << std::endl;
+        std::cout << "#polygon: " << count << std::endl;
+        std::cout << "layer: " << polygon.layer() << std::endl;
         for (auto it = polygon.border_begin(); it != polygon.border_end(); it++)
             std::cout << *it << std::endl;
         count++;
     }
-
 #endif
 
-    calc_layers(&polygons);
-
     file.close();
+
+    std::ofstream file_out;
+    std::string filepath_out = "../data/output.txt";
+    try
+    {
+        file_out.open(filepath_out);
+        if(!file_out.is_open())
+            throw std::string("error to open file: " + filepath_out);
+
+    } catch(const std::string& ex) {
+        std::cerr << ex << std::endl;
+        file_out.close();
+        return 0;
+    }
+
+    write_polygons(file_out, polygons);
+
+    file_out.close();
 
     return 0;
 }

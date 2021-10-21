@@ -97,7 +97,7 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
             }
         }
     }
-    set_layer(layer);
+    this->_layer = layer;
 }
 std::vector<Segment2D> Polygon2D::border() const
 {

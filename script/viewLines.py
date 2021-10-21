@@ -10,19 +10,30 @@ def random_color():
 file = open(INPUT_FILEPATH, 'r')
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
+layer = 0
 xs = []
 ys = []
 data = []
 for line in file:
     if not line.strip():
-        data.append((xs, ys))
+        data.append(((xs, ys), layer))
         xs, ys = [], []
     else:
-        x, y = map(float, line.split())
-        xs.append(x)
-        ys.append(y)
+        if "layer" in line:
+            layer = int(line.split(':')[1])
+        else:
+            x, y = map(int, line.split())
+            xs.append(x)
+            ys.append(y)
+if data[0][1] % 2 == 0:
+    color_pattern = 0
+else:
+    color_pattern = 1
 
 for fig in data:
-    plt.plot(fig[0], fig[1], color=random_color(), marker='o')
-    plt.fill(fig[0], fig[1], color='gray')
+    plt.plot(fig[0][0], fig[0][1], color='gray', marker='o')
+    if (fig[1] % 2 == 0 and color_pattern == 0) or (fig[1] % 2 != 0 and color_pattern == 1):
+        plt.fill(fig[0][0], fig[0][1], color='gray', alpha=0.5)
+    elif (fig[1] % 2 != 0 and color_pattern == 0) or (fig[1] % 2 == 0 and color_pattern == 1):
+        plt.fill(fig[0][0], fig[0][1], color='white')
 plt.show()
