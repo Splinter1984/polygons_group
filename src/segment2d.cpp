@@ -49,15 +49,22 @@ Segment2D& Segment2D::operator=(const Segment2D& segment)
 
     return *this;
 }
-/*bool Segment2D::operator==(const Segment2D& segment)
+bool Segment2D::operator==(const Segment2D& segment)
 {
     return _start == segment.start() && _end == segment.end();
 }
 bool Segment2D::operator!=(const Segment2D& segment)
 {
     return !(*this==segment);
-}*/
-
+}
+bool operator==(const Segment2D& first, const Segment2D& second)
+{
+    return (first.start() == second.start() && first.end() == second.end());
+}
+bool operator!=(const Segment2D& first, const Segment2D& second)
+{
+    return !(first == second);
+}
 std::ostream& operator<<(std::ostream& out, const Segment2D& segment)
 {
     return out << segment.start() << " | " << segment.end();

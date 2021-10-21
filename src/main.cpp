@@ -11,8 +11,7 @@
 /**
  * the function allows you to read the boundary values for 
  * a polygon and fill in the transmitted polygon vector
- * @param `file` that contain polygons points, vector of store polygons
- * @return stored polygons pointer 
+ * @param `file` that contain polygons points2D, `polygons` vector of store polygons2D
  */
 void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
 {
@@ -34,12 +33,12 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
     }
     
     // init triggers for check, when polygon end
-    float trigx, trigy;
-    trigx = startx;
-    trigy = starty;
+    float trigx = startx, trigy = starty;
+
     while(file >> endx >> endy)
     {
-        polygon.push_back(Segment2D((int)startx, (int)starty, (int)endx, (int)endy));
+        polygon.push_back(Segment2D(Point2D((int)startx, (int)starty), 
+                                    Point2D((int)endx, (int)endy)));
         if (trigx == endx && trigy == endy)
         {
             file >> startx >> starty;
@@ -52,6 +51,17 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
             startx = endx;
             starty = endy;
         }
+    }
+}
+
+void calc_layers(std::vector<Polygon2D>* polygons)
+{
+    for (auto polygon: *polygons)
+    {
+        polygon.calc_layer(*polygons);
+    #ifdef BL_DEBUG
+        std::cout << "layer: "<< polygon.layer() << std::endl;
+    #endif
     }
 }
 
@@ -86,6 +96,8 @@ int main()
     }
 
 #endif
+
+    calc_layers(&polygons);
 
     file.close();
 

@@ -37,6 +37,23 @@ Point2D& Point2D::operator=(const Point2D& point)
     
     return *this;
 }
+
+Point2D Point2D::operator+(const Point2D& point)
+{
+    return Point2D(_x+point.x(), _y+point.y());
+}
+Point2D Point2D::operator-(const Point2D& point)
+{
+    return Point2D(_x-point.x(), _y-point.y());
+}
+Point2D Point2D::operator*(const float value)
+{
+    return Point2D(_x*value, _y*value);
+}
+Point2D Point2D::operator/(const float value)
+{
+    return Point2D(_x/value, _y/value);
+}
 bool Point2D::operator==(const Point2D& point) 
 {
     return _x == point.x() && _y == point.y();
@@ -46,6 +63,14 @@ bool Point2D::operator!=(const Point2D& point)
     return !(*this == point);
 }
 
+bool operator==(const Point2D& first, const Point2D& second)
+{
+    return (first.x() == second.x() && first.y() == second.y());
+}
+bool operator!=(const Point2D& first, const Point2D& second)
+{
+    return !(first == second);
+}
 std::ostream& operator<<(std::ostream& out, const Point2D& point)
 {
     return out << point.x() << " " << point.y();

@@ -18,8 +18,16 @@ class Point2D
         void set_y(const int y);
 
         Point2D& operator=(const Point2D& point);
+        
+        Point2D operator+(const Point2D& point);
+        Point2D operator-(const Point2D& point);
+        Point2D operator*(const float value);
+        Point2D operator/(const float value);
+
         bool operator==(const Point2D& point);
         bool operator!=(const Point2D& point);
+        friend bool operator==(const Point2D& first, const Point2D& second);
+        friend bool operator!=(const Point2D& first, const Point2D& second);
         
         friend std::ostream& operator<<(std::ostream& out, const Point2D& point);
 };

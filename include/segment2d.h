@@ -22,8 +22,10 @@ class Segment2D
         void set_end(const Point2D& end);
 
         Segment2D& operator=(const Segment2D& segment);
-        /*bool operator==(const Segment2D& segment);
-        bool operator!=(const Segment2D& segment);*/
+        bool operator==(const Segment2D& segment);
+        bool operator!=(const Segment2D& segment);
+        friend bool operator==(const Segment2D& first, const Segment2D& second);
+        friend bool operator!=(const Segment2D& first, const Segment2D& second);
 
         friend std::ostream& operator<<(std::ostream& out, const Segment2D& segment); 
 };

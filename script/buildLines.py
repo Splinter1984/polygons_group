@@ -1,9 +1,6 @@
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from matplotlib.backend_bases import MouseButton
-#   from matplotlib.widgets import Button
-#   import random
-#   import os
 
 POINT_RADIUS = 0.5
 OUTPUT_FILEPATH = '../data/input.txt'
@@ -52,7 +49,6 @@ plt.ylim(0, 10)
 ax.xaxis.set_major_locator(MultipleLocator(1))
 ax.yaxis.set_major_locator(MultipleLocator(1))
 plt.grid(True)
-#file.write(str(5) + ' ' + str(5) + '\n')
 line, = plt.plot([], [], c=DRAW_COLOR, marker = 'o')
 linebuilder = LineBuilder(line, plt, file, POINT_RADIUS)
 
