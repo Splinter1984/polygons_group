@@ -11,18 +11,26 @@
 Polygon2D::Polygon2D() 
 {}
 Polygon2D::Polygon2D(const Polygon2D& polygon)
-:Polygon2D(polygon.layer(), polygon.border()) 
+:Polygon2D(polygon.id(), polygon.layer(), polygon.border())
 {}
-Polygon2D::Polygon2D(const size_t layer, const std::vector<Segment2D>& border)
-:_layer(layer), _border(border) 
+Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border)
+:_id(id), _layer(layer), _border(border) 
 {}
-Polygon2D::Polygon2D(const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
+Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
                                          const std::vector<Segment2D>::iterator& it_end)
-                                         :_layer(layer), _border(it_begin, it_end) 
+                                         :_id(id), _layer(layer), _border(it_begin, it_end) 
 {}
 size_t Polygon2D::layer() const
 {
     return _layer;
+}
+size_t Polygon2D::id() const
+{
+    return _id;
+}
+size_t Polygon2D::parent_id() const
+{
+    return _parent_id;
 }
 void Polygon2D::set_layer(const size_t layer)
 {
@@ -102,7 +110,9 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                                      );
                 intersec += calc_intersec(ray, polygon);
             }
-
+            if (intersec)
+                this->_parent_id = polygon.id();
+            
             #ifdef BL_DEBUG
                 std::cout << intersec << std::endl;
             #endif

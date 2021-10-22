@@ -4,18 +4,23 @@
 class Polygon2D
 {
     private:
+        size_t _id;
+        size_t _parent_id = 0;
         size_t _layer;
         std::vector<Segment2D> _border;
 
     public:
         Polygon2D();
         Polygon2D(const Polygon2D& polygon);
-        Polygon2D(const size_t layer, const std::vector<Segment2D>& border);
-        Polygon2D(const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border);
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
                                       const std::vector<Segment2D>::iterator& it_end);
-
+        
         size_t layer() const;
         void set_layer(const size_t layer);
+
+        size_t id() const;
+        size_t parent_id() const;
 
         /** layer value calculation
          * calculation of the polygon layer based on the analysis 
