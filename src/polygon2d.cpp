@@ -110,7 +110,7 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                                      );
                 intersec += calc_intersec(ray, polygon);
             }
-            if (intersec)
+            if (intersec && polygon.id() > this->parent_id())
                 this->_parent_id = polygon.id();
             
             #ifdef BL_DEBUG

@@ -43,7 +43,7 @@ class LineBuilder:
 file = open(OUTPUT_FILEPATH, 'w')
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
-plt.title("use Mouse RIGHT for build line/ LEFT for set new point")
+#   plt.title("use Mouse RIGHT for build line/ LEFT for set new point")
 plt.xlim(0, 10)
 plt.ylim(0, 10)
 ax.xaxis.set_major_locator(MultipleLocator(1))
