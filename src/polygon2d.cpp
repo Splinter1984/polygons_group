@@ -1,5 +1,13 @@
 #include "polygon2d.h"
-#include <iostream>
+#define BL_DEBUG
+
+#define INF_CONST 0
+#define THRESHOLD 0.01
+
+#ifdef BL_DEBUG
+    #include <iostream>
+#endif
+
 Polygon2D::Polygon2D() 
 {}
 Polygon2D::Polygon2D(const Polygon2D& polygon)
@@ -22,7 +30,7 @@ void Polygon2D::set_layer(const size_t layer)
         return;
     _layer = layer;
 }
-float Polygon2D::scalar_product(const Point2D& first, const Point2D& second)
+double Polygon2D::scalar_product(const Point2D& first, const Point2D& second)
 {
     return (first.x()*second.x() + first.y()*second.y());
 }
@@ -32,7 +40,7 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
     size_t count = 0;
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
-        float t1 = 0, t2 = 0, t = 0;
+        double t1 = 0, t2 = 0, t = 0;
         t1+= scalar_product(ray.start()-segment->start(), segment->end()-segment->start())
             *scalar_product(segment->end()-segment->start(), ray.end()-ray.start());
 
@@ -46,11 +54,12 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
             *scalar_product(segment->end()-segment->start(), ray.end()-ray.start());
         t = t1/t2;
 
-        float u1 = 0, u2 = 0;
+        double u1 = 0, u2 = 0;
         u1+= scalar_product(ray.start()-segment->start(), segment->end()-segment->start());
         u1+= t*scalar_product(ray.end()-ray.start(), segment->end()-segment->start());
         u2 = scalar_product(segment->end()-segment->start(), segment->end()-segment->start());
 
+        /* we must exclude the case of parallelism of lines */
         if (t2 != 0 && u2 != 0)
         {
             Segment2D seg(segment->start() + (segment->end() - segment->start())*u1/u2,
@@ -58,23 +67,28 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
             Point2D tmp(seg.end() - seg.start());
             Point2D close_point((seg.end() + seg.start()) / 2);
 
+            /* we must exclude the case of going beyond the boundaries 
+               of the segments of the point of intersection of lines */
             if (scalar_product(close_point - ray.start(), ray.end() - ray.start()) > 0 &&
                 scalar_product(close_point - ray.end(), ray.start() - ray.end()) > 0 &&
                 scalar_product(close_point - segment->start(), segment->end() - segment->start()) > 0 &&
                 scalar_product(close_point - segment->end(), segment->start() - segment->end()) > 0)
             {
-                if ((scalar_product(tmp, tmp) - 0.001) < 0)
+                if ((scalar_product(tmp, tmp) - THRESHOLD) < 0)
                     count+=1;
             }
         }
     }
-
-    return count;
+    /* if the number of intersections is even, this means that 
+       the ray went out of the segment's field of view to 
+       reach a point on the polygon */
+    return (count % 2 == 0)? 0: count;;
 }
 
 void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
 {
-    size_t layer = 0;
+    /* initialize start layer as 1 */
+    size_t layer = 1;
     for (auto polygon: polygons)
     {
         if (*this != polygon)
@@ -82,19 +96,18 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
             size_t intersec = 0;
             for (auto segment: _border)
             {
-                Segment2D ray(Point2D(0, segment.start().y()), segment.start());
+                /* horizontal ray from a fixed point to a point on a segment */
+                Segment2D ray(Point2D(INF_CONST, segment.start().y()), /// < some fixed point 
+                                     segment.start() /// < point on segment
+                                     );
                 intersec += calc_intersec(ray, polygon);
             }
 
-            std::cout << intersec << std::endl;
-
-            size_t inter_count = 0;
-            if (!(intersec % _border.size()))
-            {
-                inter_count = intersec / _border.size();
-                if (!(inter_count % 2))
-                    layer+=1;
-            }
+            #ifdef BL_DEBUG
+                std::cout << intersec << std::endl;
+            #endif
+            /* the layer grows only if uncovered intersections are detected */
+            layer += intersec? 1: 0;
         }
     }
     this->_layer = layer;

@@ -8,7 +8,7 @@
 
 #define BL_DEBUG
 
-/**
+/** read points from file 
  * the function allows you to read the boundary values for 
  * a polygon and fill in the transmitted polygon vector
  * @param `file` that contain polygons points2D, `polygons` vector of store polygons2D
@@ -54,17 +54,32 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
     }
 }
 
+/** calculation of the layer for each polygon
+ * the function allows you to calculate the layer of each 
+ * polygon in the passed array based on the built-in method
+ * @param `polygons` vector of store polygons2D
+ */
 void calc_layers(std::vector<Polygon2D>& polygons)
 {
+#ifdef BL_DEBUG
+    int count = 0;
+#endif
     for (auto polygon=polygons.begin(); polygon!=polygons.end(); polygon++)
     {
+        /* selection of a layer for a polygon relative to other polygons
+           polygon layer increases in proportion to the number of bounding polygons*/
         polygon->calc_layer(polygons);
     #ifdef BL_DEBUG
-        std::cout << "layer: "<< polygon->layer() << std::endl;
+        std::cout << "polygon: " << ++count << " layer: "<< polygon->layer() << std::endl;
     #endif
     }
 }
 
+/** write polygons to file
+ * the function allows you to write the layer 
+ * and key points of each polygon to a file
+ * @param `file` file to write, `polygons` vector of store polygons2D
+ */
 void write_polygons(std::ofstream& file,  std::vector<Polygon2D>& polygons)
 {
     for (auto polygon: polygons)
@@ -97,8 +112,11 @@ int main()
     read_lines(file, &polygons);
 
     calc_layers(polygons);
+    
+    /* the operation of sorting by layers is only necessary 
+       for the convenience of drawing polygons in python script */
     std::sort(std::begin(polygons), std::end(polygons), [](Polygon2D lv, Polygon2D rv) 
-                                                {return lv.layer() > rv.layer();});
+                                                {return lv.layer() < rv.layer();});
 
 #ifdef BL_DEBUG
     size_t count = 1;
