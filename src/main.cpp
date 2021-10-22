@@ -34,7 +34,8 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
     
     // init triggers for check, when polygon end
     float trigx = startx, trigy = starty;
-
+    
+    int count_id = 1;
     while(file >> endx >> endy)
     {
         polygon.push_back(Segment2D(Point2D((int)startx, (int)starty), 
@@ -44,7 +45,8 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
             file >> startx >> starty;
             trigx = startx;
             trigy = starty;
-            polygons->push_back(Polygon2D(0, polygon));
+            polygons->push_back(Polygon2D(count_id, 0, polygon));
+            count_id++;
             polygon.clear();
         }
         else{
@@ -61,16 +63,13 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
  */
 void calc_layers(std::vector<Polygon2D>& polygons)
 {
-#ifdef BL_DEBUG
-    int count = 0;
-#endif
     for (auto polygon=polygons.begin(); polygon!=polygons.end(); polygon++)
     {
         /* selection of a layer for a polygon relative to other polygons
            polygon layer increases in proportion to the number of bounding polygons*/
         polygon->calc_layer(polygons);
     #ifdef BL_DEBUG
-        std::cout << "polygon: " << ++count << " layer: "<< polygon->layer() << std::endl;
+        std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << std::endl;
     #endif
     }
 }
@@ -119,14 +118,15 @@ int main()
                                                 {return lv.layer() < rv.layer();});
 
 #ifdef BL_DEBUG
-    size_t count = 1;
+    std::cout << std::endl;
     for (const auto& polygon: polygons)
     {
-        std::cout << "#polygon: " << count << std::endl;
-        std::cout << "layer: " << polygon.layer() << std::endl;
+        std::cout << "#polygon:" << polygon.id() 
+                  << " #parent:" << polygon.parent_id() 
+                  << " #layer:" << polygon.layer() << std::endl;
         for (auto it = polygon.border_begin(); it != polygon.border_end(); it++)
             std::cout << *it << std::endl;
-        count++;
+        std::cout << std::endl;
     }
 #endif
 
