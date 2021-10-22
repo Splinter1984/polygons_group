@@ -25,6 +25,6 @@ you can use ```python``` script to visualize ```output.txt``` data
 cd broken_lines/scripts/
 python viewLines.py
 ```
-result of ```python``` view script
+result of ```python``` build and view scripts
 
-![](https://github.com/Splinter1984/broken_lines/blob/broken_linesv2.0/data/Figure_2.png?raw=true) | ![](https://github.com/Splinter1984/broken_lines/blob/broken_linesv2.0/data/Figure_1.png?raw=true)
+![](https://github.com/Splinter1984/broken_lines/blob/broken_linesv2.0/data/Figure_2.png?raw=true)  ![](https://github.com/Splinter1984/broken_lines/blob/broken_linesv2.0/data/Figure_1.png?raw=true)
