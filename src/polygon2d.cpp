@@ -102,20 +102,31 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
         if (*this != polygon)
         {
             size_t intersec = 0;
+            int count = 0;
+            int tmp = 0;
             for (auto segment: _border)
             {
                 /* horizontal ray from a fixed point to a point on a segment */
                 Segment2D ray(Point2D(INF_CONST, segment.start().y()), /// < some fixed point 
                                      segment.start() /// < point on segment
                                      );
-                intersec += calc_intersec(ray, polygon);
+                tmp = calc_intersec(ray, polygon);
+                intersec += tmp;
+                count++;
+                #ifdef BL_DEBUG
+                    std::cout << " polygon: " << this->id() 
+                              << "| point: " << count 
+                              << "| intersec: " <<  tmp 
+                              << " with polygon " << polygon.id() 
+                              << std::endl;
+                #endif
             }
+            #ifdef BL_DEBUG
+                std::cout << std::endl;
+            #endif
             if (intersec && polygon.id() > this->parent_id())
                 this->_parent_id = polygon.id();
             
-            #ifdef BL_DEBUG
-                std::cout << intersec << std::endl;
-            #endif
             /* the layer grows only if uncovered intersections are detected */
             layer += intersec? 1: 0;
         }

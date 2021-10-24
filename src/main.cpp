@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include <vector>
 #include <fstream>
 #include "point2d.h"
@@ -91,6 +92,26 @@ void write_polygons(std::ofstream& file,  std::vector<Polygon2D>& polygons)
     }
 }
 
+void build_group(const std::vector<Polygon2D>& polygons, std::map<size_t, std::vector<size_t>>& group)
+{
+    size_t group_num = 0;
+    for (const auto& polygon: polygons)
+    {
+        std::vector<size_t> tmp_group;
+        if (polygon.layer() % 2 != 0)
+        {
+            group_num++;
+            tmp_group.push_back(polygon.id());
+            for (const auto& item: polygons)
+            {
+                if (item.parent_id() == polygon.id())
+                    tmp_group.push_back(item.id());
+            }
+            group.insert(std::pair<size_t, std::vector<size_t>>(group_num, tmp_group));
+        }
+    }
+}
+
 int main()
 {
     std::ifstream file;
@@ -111,11 +132,6 @@ int main()
     read_lines(file, &polygons);
 
     calc_layers(polygons);
-    
-    /* the operation of sorting by layers is only necessary 
-       for the convenience of drawing polygons in python script */
-    std::sort(std::begin(polygons), std::end(polygons), [](Polygon2D lv, Polygon2D rv) 
-                                                {return lv.layer() < rv.layer();});
 
 #ifdef BL_DEBUG
     std::cout << std::endl;
@@ -129,6 +145,25 @@ int main()
         std::cout << std::endl;
     }
 #endif
+
+    std::map<size_t, std::vector<size_t>> group;
+    build_group(polygons, group);
+
+#ifdef BL_DEBUG
+    for (const auto it: group)
+    {
+        std::cout << "#group: " << it.first << " ( ";
+        for (const auto id: it.second)
+            std::cout << id << " ";
+        std::cout << ")" << std::endl;
+    }
+
+#endif
+
+    /* the operation of sorting by layers is only necessary 
+       for the convenience of drawing polygons in python script */
+    std::sort(std::begin(polygons), std::end(polygons), [](Polygon2D lv, Polygon2D rv) 
+                                                {return lv.layer() < rv.layer();});
 
     file.close();
 
