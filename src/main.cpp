@@ -7,7 +7,7 @@
 #include "segment2d.h"
 #include "polygon2d.h"
 
-#define BL_DEBUG
+#define BL_RELEASE
 
 /** read points from file 
  * the function allows you to read the boundary values for 
@@ -155,16 +155,14 @@ int main()
     std::map<size_t, std::vector<size_t>> group;
     build_group(polygons, group);
 
-#ifdef BL_DEBUG
     for (const auto it: group)
     {
-        std::cout << "#group: " << it.first << " ( ";
+        std::cout << "#group: " << it.first << " [ ";
         for (const auto id: it.second)
             std::cout << id << " ";
-        std::cout << ")" << std::endl;
+        std::cout << "]" << std::endl;
     }
 
-#endif
 
     /* the operation of sorting by layers is only necessary 
        for the convenience of drawing polygons in python script */

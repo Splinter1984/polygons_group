@@ -1,5 +1,4 @@
 #include "polygon2d.h"
-#define BL_DEBUG
 
 #define INF_CONST 0
 #define THRESHOLD 0.01
