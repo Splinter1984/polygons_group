@@ -20,6 +20,8 @@ class Polygon2D
         void set_layer(const size_t layer);
 
         size_t id() const;
+        
+        /* the parent polygon is the polygon external to the current */
         size_t parent_id() const;
 
         /** layer value calculation

@@ -92,6 +92,12 @@ void write_polygons(std::ofstream& file,  std::vector<Polygon2D>& polygons)
     }
 }
 
+/** fill group polygons id
+ * the function distributes polygons into groups depending 
+ * on the layer and parent polygon
+ * @param `polygons` vector of store polygons2D
+ * @param `group` map of group id and vector of polygons inside group
+ */
 void build_group(const std::vector<Polygon2D>& polygons, std::map<size_t, std::vector<size_t>>& group)
 {
     size_t group_num = 0;
