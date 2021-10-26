@@ -1,5 +1,7 @@
 #include "polygon2d.h"
 
+#define BL_DEBUG
+
 #define INF_CONST 0
 #define THRESHOLD 0.01
 
@@ -37,9 +39,13 @@ void Polygon2D::set_layer(const size_t layer)
         return;
     _layer = layer;
 }
-double Polygon2D::scalar_product(const Point2D& first, const Point2D& second)
+int Polygon2D::scalar_product(const Point2D& first, const Point2D& second)
 {
     return (first.x()*second.x() + first.y()*second.y());
+}
+int Polygon2D::cross_product(const Point2D& first, const Point2D& second)
+{
+    return (first.x()*second.y() - first.y()*second.x());
 }
 
 size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
@@ -47,44 +53,21 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
     size_t count = 0;
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
-        double t1 = 0, t2 = 0, t = 0;
-        t1+= scalar_product(ray.start()-segment->start(), segment->end()-segment->start())
-            *scalar_product(segment->end()-segment->start(), ray.end()-ray.start());
+        /* to determine the intersection of straight lines on a plane, 
+           we need to determine two coefficients from the system of equations of straight lines*/
+        double ray_rate, seg_rate;
 
-        t1-= scalar_product(ray.start()-segment->start(), ray.end()-ray.start())
-            *scalar_product(segment->end()-segment->start(), segment->end()-segment->start());
+        /* calculate the coordinates of straight lines on the plane */
+        Point2D ray_cord = ray.end() - ray.start();
+        Point2D seg_cord = segment->end() - segment->start();
 
-        t2+= scalar_product(ray.end()-ray.start(), ray.end()-ray.start())
-            *scalar_product(segment->end()-segment->start(), segment->end()-segment->start());
+        double cross_const = cross_product(ray_cord, seg_cord);
+        ray_rate = cross_product(segment->start() - ray.start(), ray_cord)/cross_const;
+        seg_rate = cross_product(segment->start() - ray.start(), seg_cord)/cross_const;
 
-        t2-= scalar_product(ray.end()-ray.start(), segment->end()-segment->start())
-            *scalar_product(segment->end()-segment->start(), ray.end()-ray.start());
-        t = t1/t2;
-
-        double u1 = 0, u2 = 0;
-        u1+= scalar_product(ray.start()-segment->start(), segment->end()-segment->start());
-        u1+= t*scalar_product(ray.end()-ray.start(), segment->end()-segment->start());
-        u2 = scalar_product(segment->end()-segment->start(), segment->end()-segment->start());
-
-        /* we must exclude the case of parallelism of lines */
-        if (t2 != 0 && u2 != 0)
-        {
-            Segment2D seg(segment->start() + (segment->end() - segment->start())*u1/u2,
-                        ray.start() + (ray.end() - ray.start())*t);
-            Point2D tmp(seg.end() - seg.start());
-            Point2D close_point((seg.end() + seg.start()) / 2);
-
-            /* we must exclude the case of going beyond the boundaries 
-               of the segments of the point of intersection of lines */
-            if (scalar_product(close_point - ray.start(), ray.end() - ray.start()) > 0 &&
-                scalar_product(close_point - ray.end(), ray.start() - ray.end()) > 0 &&
-                scalar_product(close_point - segment->start(), segment->end() - segment->start()) > 0 &&
-                scalar_product(close_point - segment->end(), segment->start() - segment->end()) > 0)
-            {
-                if ((scalar_product(tmp, tmp) - THRESHOLD) < 0)
-                    count+=1;
-            }
-        }
+        /* check that the intersection point does not go beyond the boundaries of the straight lines */
+        if (ray_rate >= 0 && ray_rate <= 1 && seg_rate >= 0 && seg_rate <= 1)
+            count++;
     }
     /* if the number of intersections is even, this means that 
        the ray went out of the segment's field of view to 
