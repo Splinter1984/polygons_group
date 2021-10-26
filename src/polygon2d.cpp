@@ -94,6 +94,11 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                                      );
                 tmp = calc_intersec(ray, polygon);
                 intersec += tmp;
+                if (intersec && !tmp)
+                {
+                    intersec = 0;
+                    break;
+                }
                 count++;
                 #ifdef BL_DEBUG
                     std::cout << " polygon: " << this->id() 
