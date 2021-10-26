@@ -54,6 +54,10 @@ class Polygon2D
         /** scalar product for 2D points
          * @param `first`, `second` two 2D points
          */
-        double scalar_product(const Point2D& first, const Point2D& second);
+        int scalar_product(const Point2D& first, const Point2D& second);
+        /** cross product for 2D points
+         * @param `first`, `second` two 2D points
+         */
+        int cross_product(const Point2D& first, const Point2D& second);
 
 };
