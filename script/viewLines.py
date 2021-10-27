@@ -33,7 +33,7 @@ else:
 for fig in data:
     plt.plot(fig[0][0], fig[0][1], color='gray', marker='o')
     if (fig[1] % 2 != 0):
-        plt.fill(fig[0][0], fig[0][1], color='gray', alpha=0.5)
+        plt.fill(fig[0][0], fig[0][1], color='gray', alpha=0.7)
     else:
         plt.fill(fig[0][0], fig[0][1], color='white')
 plt.show()

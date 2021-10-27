@@ -69,9 +69,9 @@ void calc_layers(std::vector<Polygon2D>& polygons)
         /* selection of a layer for a polygon relative to other polygons
            polygon layer increases in proportion to the number of bounding polygons*/
         polygon->calc_layer(polygons);
-    #ifdef BL_DEBUG
-        std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << std::endl;
-    #endif
+        #ifdef BL_DEBUG
+            std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << std::endl;
+        #endif
     }
 }
 
@@ -154,6 +154,7 @@ int main()
 
     std::map<size_t, std::vector<size_t>> group;
     build_group(polygons, group);
+    file.close();
 
     for (const auto it: group)
     {
@@ -168,8 +169,6 @@ int main()
        for the convenience of drawing polygons in python script */
     std::sort(std::begin(polygons), std::end(polygons), [](Polygon2D lv, Polygon2D rv) 
                                                 {return lv.layer() < rv.layer();});
-
-    file.close();
 
     std::ofstream file_out;
     std::string filepath_out = "../data/output.txt";

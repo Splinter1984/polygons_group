@@ -3,7 +3,7 @@
 #define BL_DEBUG
 
 #define INF_CONST 0
-#define THRESHOLD 0.01
+#define THRESHOLD 1.0E-5
 
 #ifdef BL_DEBUG
     #include <iostream>
@@ -66,7 +66,7 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
         seg_rate = cross_product(segment->start() - ray.start(), seg_cord)/cross_const;
 
         /* check that the intersection point does not go beyond the boundaries of the straight lines */
-        if (ray_rate >= 0 && ray_rate <= 1 && seg_rate >= 0 && seg_rate <= 1)
+        if (ray_rate > 0-THRESHOLD && ray_rate < 1+THRESHOLD && seg_rate > 0-THRESHOLD && seg_rate < 1+THRESHOLD)
             count++;
     }
     /* if the number of intersections is even, this means that 
@@ -85,21 +85,16 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
         {
             size_t intersec = 0;
             int count = 0;
-            int tmp = 0;
             for (auto segment: _border)
             {
                 /* horizontal ray from a fixed point to a point on a segment */
                 Segment2D ray(Point2D(INF_CONST, segment.start().y()), /// < some fixed point 
                                      segment.start() /// < point on segment
                                      );
-                tmp = calc_intersec(ray, polygon);
+                int tmp = calc_intersec(ray, polygon);
                 intersec += tmp;
-                if (intersec && !tmp)
-                {
-                    intersec = 0;
-                    break;
-                }
                 count++;
+                
                 #ifdef BL_DEBUG
                     std::cout << " polygon: " << this->id() 
                               << "| point: " << count 
@@ -107,6 +102,13 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                               << " with polygon " << polygon.id() 
                               << std::endl;
                 #endif
+
+                /* checking that all points lie inside the polygon */
+                if (intersec && !tmp)
+                {
+                    intersec = 0;
+                    break;
+                }
             }
             #ifdef BL_DEBUG
                 std::cout << std::endl;
