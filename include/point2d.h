@@ -10,6 +10,7 @@ class Point2D
     public:
         Point2D();
         Point2D(const int x, const int y);
+        Point2D(const double x, const double y);
         Point2D(const Point2D& point);
 
         int x() const;

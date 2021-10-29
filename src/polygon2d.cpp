@@ -51,6 +51,7 @@ int Polygon2D::cross_product(const Point2D& first, const Point2D& second)
 size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
 {
     size_t count = 0;
+    Point2D checked_point = polygon.border_begin()->end();
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
         /* to determine the intersection of straight lines on a plane, 
@@ -66,13 +67,29 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
         seg_rate = cross_product(segment->start() - ray.start(), seg_cord)/cross_const;
 
         /* check that the intersection point does not go beyond the boundaries of the straight lines */
-        if (ray_rate > 0-THRESHOLD && ray_rate < 1+THRESHOLD && seg_rate > 0-THRESHOLD && seg_rate < 1+THRESHOLD)
-            count++;
+        if (ray_rate >= 0 && ray_rate <= 1 && seg_rate >= 0 && seg_rate <= 1)
+        {
+            Point2D close_point(ray_cord.x()*seg_rate, ray_cord.y()*seg_rate);
+            close_point = close_point + ray.start();
+
+            #ifdef BL_DEBUG
+                std::cout << "close point:" << close_point << " count:" << count << std::endl;
+            #endif
+
+            if (close_point ==  checked_point)
+            {
+                if (checked_point.y() > segment->start().y())
+                {
+                    count++;
+                }
+            }else{
+                count++;
+            }
+            checked_point = segment->end();
+        }
     }
-    /* if the number of intersections is even, this means that 
-       the ray went out of the segment's field of view to 
-       reach a point on the polygon */
-    return (count % 2 == 0)? 0: count;;
+
+    return count;
 }
 
 void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
@@ -84,34 +101,38 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
         if (*this != polygon)
         {
             size_t intersec = 0;
-            int count = 0;
+            int point_id = 0;
             for (auto segment: _border)
             {
                 /* horizontal ray from a fixed point to a point on a segment */
                 Segment2D ray(Point2D(INF_CONST, segment.start().y()), /// < some fixed point 
                                      segment.start() /// < point on segment
                                      );
-                int tmp = calc_intersec(ray, polygon);
-                intersec += tmp;
-                count++;
+                int intersec_count = calc_intersec(ray, polygon);
+
+                /* if the number of intersections is even, this means that 
+                    the ray went out of the segment's field of view to 
+                    reach a point on the polygon */
+                intersec += (intersec_count % 2 == 0)? 0: intersec_count;
+                point_id++;
                 
                 #ifdef BL_DEBUG
                     std::cout << " polygon: " << this->id() 
-                              << "| point: " << count 
-                              << "| intersec: " <<  tmp 
+                              << "| point: " << point_id 
+                              << "| intersec: " <<  intersec_count 
                               << " with polygon " << polygon.id() 
                               << std::endl;
                 #endif
 
-                /* checking that all points lie inside the polygon */
-                if (intersec && !tmp)
+                /* checking that all points inside the polygon */
+                if (intersec && !intersec_count)
                 {
                     intersec = 0;
                     break;
                 }
             }
             #ifdef BL_DEBUG
-                std::cout << std::endl;
+                std::cout <<  std::endl;
             #endif
             /* the computation of the parent polygon is needed as additional grouping information */
             if (intersec && polygon.id() > this->parent_id())
