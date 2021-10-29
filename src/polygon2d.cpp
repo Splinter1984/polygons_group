@@ -1,6 +1,6 @@
 #include "polygon2d.h"
 
-#define BL_DEBUG
+#define BL_RELEASE
 
 #define INF_CONST 0
 #define THRESHOLD 1.0E-5
@@ -51,7 +51,10 @@ int Polygon2D::cross_product(const Point2D& first, const Point2D& second)
 size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
 {
     size_t count = 0;
+    
+    /* required for the analysis of duplication of interceptions at the border */
     Point2D checked_point = polygon.border_begin()->end();
+    
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
         /* to determine the intersection of straight lines on a plane, 
@@ -69,6 +72,7 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
         /* check that the intersection point does not go beyond the boundaries of the straight lines */
         if (ray_rate >= 0 && ray_rate <= 1 && seg_rate >= 0 && seg_rate <= 1)
         {
+            /* find the point of integer format closest to the intersection */
             Point2D close_point(ray_cord.x()*seg_rate, ray_cord.y()*seg_rate);
             close_point = close_point + ray.start();
 
@@ -79,9 +83,7 @@ size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
             if (close_point ==  checked_point)
             {
                 if (checked_point.y() > segment->start().y())
-                {
                     count++;
-                }
             }else{
                 count++;
             }
