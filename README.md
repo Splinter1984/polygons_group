@@ -1,4 +1,4 @@
-# broken_lines
+# polygons_group
 ![](https://img.shields.io/badge/made%20by-splinter1984-blue)	
 ![](https://img.shields.io/github/languages/code-size/Splinter1984/broken_lines)
 ### task:
