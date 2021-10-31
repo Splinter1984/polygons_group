@@ -146,8 +146,8 @@ int main()
         std::cout << "#polygon:" << polygon.id() 
                   << " #parent:" << polygon.parent_id() 
                   << " #layer:" << polygon.layer() << std::endl;
-        for (auto it = polygon.border_begin(); it != polygon.border_end(); it++)
-            std::cout << *it << std::endl;
+        
+        std::cout << polygon;
         std::cout << std::endl;
     }
 #endif

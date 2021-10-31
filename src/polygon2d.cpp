@@ -2,7 +2,6 @@
 
 #define BL_DEBUG
 
-#define INF_CONST 0
 #define THRESHOLD 1.0E-5
 
 #ifdef BL_DEBUG
@@ -39,25 +38,28 @@ void Polygon2D::set_layer(const size_t layer)
         return;
     _layer = layer;
 }
-int Polygon2D::scalar_product(const Point2D& first, const Point2D& second)
-{
-    return (first.x()*second.x() + first.y()*second.y());
-}
-int Polygon2D::cross_product(const Point2D& first, const Point2D& second)
-{
-    return (first.x()*second.y() - first.y()*second.x());
-}
 
-size_t Polygon2D::calc_intersec(const Segment2D& ray, const Polygon2D& polygon)
+size_t Polygon2D::calc_intersec(const Point2D& point, const Polygon2D& polygon)
 {
     size_t count = 0;
     
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
-        if (((segment->end().y() > ray.end().y()) != (segment->start().y() > ray.end().y()))
-            && (ray.end().x() < (segment->start().x() - segment->end().x())*(ray.end().y() - segment->end().y())
-            / (segment->start().y() - segment->end().y()) + segment->end().x()))
-            count++;
+        /* compute boolean variables to check the 
+           intersection of the segment in the y coordinate */
+        bool seg_end_bound, seg_start_bound;
+        seg_end_bound = segment->end().y() > point.y();
+        seg_start_bound = segment->start().y() > point.y();
+        
+        if (seg_end_bound != seg_start_bound)
+        {
+            /* calculate the x coordinate of the intersection point */
+            double close_point_x = (segment->start().x() - segment->end().x()) * (point.y() - segment->end().y())
+                             / (segment->start().y() - segment->end().y()) + segment->end().x();
+            
+            if (point.x() < close_point_x)
+                count++;
+        }
     }
 
     return count;
@@ -75,11 +77,7 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
             int point_id = 0;
             for (auto segment: _border)
             {
-                /* horizontal ray from a fixed point to a point on a segment */
-                Segment2D ray(Point2D(INF_CONST, segment.start().y()), /// < some fixed point 
-                                     segment.start() /// < point on segment
-                                     );
-                int intersec_count = calc_intersec(ray, polygon);
+                int intersec_count = calc_intersec(segment.start(), polygon);
 
                 /* if the number of intersections is even, this means that 
                     the ray went out of the segment's field of view to 
@@ -90,17 +88,11 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                 #ifdef BL_DEBUG
                     std::cout << " polygon: " << this->id() 
                               << "| point: " << point_id 
-                              << "| intersec: " <<  intersec 
+                              << "| intersec: " <<  intersec_count 
                               << " with polygon " << polygon.id() 
                               << std::endl;
                 #endif
 
-                /* checking that all points inside the polygon */
-                /*if (intersec && !intersec_count)
-                {
-                    intersec = 0;
-                    break;
-                }*/
             }
             #ifdef BL_DEBUG
                 std::cout <<  std::endl;
@@ -147,4 +139,9 @@ bool Polygon2D::operator==(const Polygon2D& polygon)
 bool Polygon2D::operator!=(const Polygon2D& polygon)
 {
     return !(*this == polygon);
+}
+std::ostream& operator<<(std::ostream& out, const Polygon2D& polygon)
+{
+    for (auto it=polygon.border_begin(); it != polygon.border_end(); it++)
+        std::cout << *it << std::endl;
 }

@@ -6,8 +6,6 @@ Point2D::Point2D(const Point2D& point): Point2D(point.x(), point.y())
 {}
 Point2D::Point2D(const int x, const int y): _x(x), _y(y)
 {}
-Point2D::Point2D(const double x, const double y): Point2D((int)x, (int)y)
-{}
 
 int Point2D::x() const 
 {
@@ -48,11 +46,11 @@ Point2D Point2D::operator-(const Point2D& point)
 {
     return Point2D(_x-point.x(), _y-point.y());
 }
-Point2D Point2D::operator*(const float value)
+Point2D Point2D::operator*(const int value)
 {
     return Point2D(_x*value, _y*value);
 }
-Point2D Point2D::operator/(const float value)
+Point2D Point2D::operator/(const int value)
 {
     return Point2D(_x/value, _y/value);
 }
