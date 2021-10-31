@@ -1,6 +1,6 @@
 #include "polygon2d.h"
 
-#define BL_DEBUG
+#define BL_RELEASE
 
 #define THRESHOLD 1.0E-5
 
