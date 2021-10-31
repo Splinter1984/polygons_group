@@ -24,6 +24,7 @@ class Segment2D
         Segment2D& operator=(const Segment2D& segment);
         bool operator==(const Segment2D& segment);
         bool operator!=(const Segment2D& segment);
+        
         friend bool operator==(const Segment2D& first, const Segment2D& second);
         friend bool operator!=(const Segment2D& first, const Segment2D& second);
 

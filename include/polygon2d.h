@@ -42,22 +42,19 @@ class Polygon2D
         Polygon2D& operator=(const Polygon2D& polygon);
         bool operator==(const Polygon2D& polygon);
         bool operator!=(const Polygon2D& polygon);
+
+        friend std::ostream& operator<<(std::ostream& out, const Polygon2D& polygon); 
     
     protected:
         /** ray entry calculation
-         * calculation of ray entry into the polygon based 
-         * on its intersections with segments
-         * @param `ray` segment based on part of polygon and fixed remote point
-         * @param `polygon` polygon for calculating ray occurrences
+         * the method looks at a "ray" that starts at the spot under test and extends to infinity 
+         * towards the right side of the X-axis. for each segment of the polygon, 
+         * it checks to see if the ray intersects.
+         * @param `point` 2d point as part of the polygon being tested
+         * @param `polygon` 2d polygon to check nesting
+         * 
+         * @return number of horizontal intersections of the ray from `point` to infinity
          */
-        size_t calc_intersec(const Segment2D& ray, const Polygon2D& polygon);
-        /** scalar product for 2D points
-         * @param `first`, `second` two 2D points
-         */
-        int scalar_product(const Point2D& first, const Point2D& second);
-        /** cross product for 2D points
-         * @param `first`, `second` two 2D points
-         */
-        int cross_product(const Point2D& first, const Point2D& second);
+        size_t calc_intersec(const Point2D& point, const Polygon2D& polygon);
 
 };
