@@ -3,7 +3,7 @@
 
 #define BL_RELEASE
 
-#define THRESHOLD 1.0E-5
+#define THRESHOLD 1e-008
 
 Polygon2D::Polygon2D() 
 {}
@@ -36,27 +36,35 @@ void Polygon2D::set_layer(const size_t layer)
     _layer = layer;
 }
 
+bool Polygon2D::is_intersec(const Point2D& point, const Segment2D& segment)
+{
+    /* compute boolean variables to check the 
+       intersection of the segment in the y coordinate */
+    bool seg_end_bound, seg_start_bound;
+    seg_end_bound = segment.end().y() > point.y();
+    seg_start_bound = segment.start().y() > point.y();
+    
+    if (seg_end_bound != seg_start_bound)
+    {
+        /* calculate the x coordinate of the intersection point */
+        double close_point_x = double(point.y() - segment.end().y()) / double(segment.start().y() - segment.end().y())
+                             * (segment.start().x() - segment.end().x()) + segment.end().x();
+        
+        if (point.x() < close_point_x + THRESHOLD)
+            return true;
+    }
+
+    return false;
+}
+
 size_t Polygon2D::calc_intersec(const Point2D& point, const Polygon2D& polygon)
 {
     size_t count = 0;
     
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
-        /* compute boolean variables to check the 
-           intersection of the segment in the y coordinate */
-        bool seg_end_bound, seg_start_bound;
-        seg_end_bound = segment->end().y() > point.y();
-        seg_start_bound = segment->start().y() > point.y();
-        
-        if (seg_end_bound != seg_start_bound)
-        {
-            /* calculate the x coordinate of the intersection point */
-            double close_point_x = (segment->start().x() - segment->end().x()) * (point.y() - segment->end().y())
-                             / (segment->start().y() - segment->end().y()) + segment->end().x();
-            
-            if (point.x() < close_point_x)
-                count++;
-        }
+        if (is_intersec(point, *segment))
+            count++;
     }
 
     return count;

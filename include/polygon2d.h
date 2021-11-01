@@ -47,14 +47,23 @@ class Polygon2D
     
     protected:
         /** ray entry calculation
-         * the method looks at a "ray" that starts at the spot under test and extends to infinity 
-         * towards the right side of the X-axis. for each segment of the polygon, 
-         * it checks to see if the ray intersects.
+         * the method looks count number of intersec ray and all segments in polygon
          * @param `point` 2d point as part of the polygon being tested
          * @param `polygon` 2d polygon to check nesting
          * 
          * @return number of horizontal intersections of the ray from `point` to infinity
          */
         size_t calc_intersec(const Point2D& point, const Polygon2D& polygon);
+
+        /** check that ray intersec with segment
+         * the method looks at a "ray" that starts at the spot under test and extends to infinity 
+         * towards the right side of the X-axis. for each segment of the polygon, 
+         * it checks to see if the ray intersects.
+         * @param `point` 2d point as start of ray
+         * @param `segment` 2d segment for intersection test
+         * 
+         * @return if intersection detected return `true` else `false`
+         */
+        bool is_intersec(const Point2D& point, const Segment2D& segment);
 
 };

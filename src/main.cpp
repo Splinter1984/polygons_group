@@ -7,7 +7,7 @@
 #include "segment2d.h"
 #include "polygon2d.h"
 
-#define BL_RELEASE
+#define BL_DEBUG
 
 /** read points from file 
  * the function allows you to read the boundary values for 
