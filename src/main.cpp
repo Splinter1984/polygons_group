@@ -110,7 +110,7 @@ void build_group(const std::vector<Polygon2D>& polygons, std::map<size_t, std::v
             tmp_group.push_back(polygon.id());
             for (const auto& item: polygons)
             {
-                if (item.parent_id() == polygon.id())
+                if (item.parent_id() == polygon.id() && item.layer() % 2 == 0)
                     tmp_group.push_back(item.id());
             }
             group.insert(std::pair<size_t, std::vector<size_t>>(group_num, tmp_group));
