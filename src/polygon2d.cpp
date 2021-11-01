@@ -1,12 +1,9 @@
 #include "polygon2d.h"
+#include <iostream>
 
 #define BL_RELEASE
 
 #define THRESHOLD 1.0E-5
-
-#ifdef BL_DEBUG
-    #include <iostream>
-#endif
 
 Polygon2D::Polygon2D() 
 {}

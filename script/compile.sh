@@ -1,12 +1,12 @@
 #! /bin/sh
 
-project_dir="broken_lines"
+project_dir="polygons_group"
 source_dir=$(pwd)
 current_folder=$(pwd | grep -o '[^/]*$')
 
 if [[ $current_folder == "script" ]]; then
     cd ../
-elif [[ $current_folder != "broken_lines" ]]; then
+elif [[ $current_folder != $project_dir ]]; then
     echo -e "\033[1;31m[ERROR]\033[0m: move file \033[100m${0##*/}\033[49m to the root of the project or '$project_dir/scripts' folder "
     exit 1
 fi
