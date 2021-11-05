@@ -15,7 +15,8 @@ if [[ $OSTYPE == "msys" ]]; then
     cmake -E make_directory build
     cd build
     cmake .. -G 'MinGW Makefiles' && mingw32-make
-elif [[ `$OSTYPE` == "linux-gnu" ]]; then
+elif [[ $OSTYPE == "linux-gnu" ]]; then
     cmake -E make_directory build
     cd build && cmake .. && make
 fi
+
