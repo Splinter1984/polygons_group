@@ -54,7 +54,7 @@ class Polygon2D
          * @return number of horizontal intersections of the ray from `point` to infinity
          */
         size_t calc_intersec(const Point2D& point, const Polygon2D& polygon);
-
+    
         /** check that ray intersec with segment
          * the method looks at a "ray" that starts at the spot under test and extends to infinity 
          * towards the right side of the X-axis. for each segment of the polygon, 

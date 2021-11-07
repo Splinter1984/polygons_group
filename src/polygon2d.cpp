@@ -47,10 +47,10 @@ bool Polygon2D::is_intersec(const Point2D& point, const Segment2D& segment)
     if (seg_end_bound != seg_start_bound)
     {
         /* calculate the x coordinate of the intersection point */
-        double close_point_x = double(point.y() - segment.end().y()) / double(segment.start().y() - segment.end().y())
+        long double close_point_x = (point.y() - segment.end().y()) / (long double)(segment.start().y() - segment.end().y())
                              * (segment.start().x() - segment.end().x()) + segment.end().x();
         
-        if (point.x() < close_point_x + THRESHOLD)
+        if (point.x() < close_point_x)
             return true;
     }
 
@@ -61,6 +61,7 @@ size_t Polygon2D::calc_intersec(const Point2D& point, const Polygon2D& polygon)
 {
     size_t count = 0;
     
+    /* check the entire border of the polygon for intersection with the ray  */
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
         if (is_intersec(point, *segment))
@@ -149,4 +150,5 @@ std::ostream& operator<<(std::ostream& out, const Polygon2D& polygon)
 {
     for (auto it=polygon.border_begin(); it != polygon.border_end(); it++)
         std::cout << *it << std::endl;
+    return out;
 }
