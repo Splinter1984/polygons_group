@@ -16,14 +16,14 @@
  */
 void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
 {
-    // init temp segments storage
+    /* init temp segments storage */
     std::vector<Segment2D> polygon;
 
     /* init read values as float, cause python script
         store value whith .0 */
     float startx, starty, endx, endy;
 
-    // try to read two start values for set polygon triggers
+    /* try to read two start values for set polygon triggers */
     try
     {
         if (!(file >> startx >> starty))
@@ -33,7 +33,7 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
         return;
     }
     
-    // init triggers for check, when polygon end
+    /* init triggers for check, when polygon end */
     float trigx = startx, trigy = starty;
     
     int count_id = 1;
@@ -47,6 +47,8 @@ void read_lines(std::ifstream& file, std::vector<Polygon2D>* polygons)
             trigx = startx;
             trigy = starty;
             polygons->push_back(Polygon2D(count_id, 0, polygon));
+            
+            /* calculate area of stored polygon */
             polygons->back().calc_area();
             count_id++;
             polygon.clear();
@@ -71,7 +73,9 @@ void calc_layers(std::vector<Polygon2D>& polygons)
            polygon layer increases in proportion to the number of bounding polygons*/
         polygon->calc_layer(polygons);
         #ifdef BL_DEBUG
-            std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << " parent: " << polygon->parent_id() << std::endl;
+            std::cout << "polygon: " << polygon->id() 
+                      << " layer: "<< polygon->layer() 
+                      << " parent: " << polygon->parent_id() << std::endl;
         #endif
     }
 }
@@ -142,8 +146,9 @@ int main()
     for (const auto& polygon: polygons)
     {
         std::cout << "#polygon:" << polygon.id()
-                  << " #per:" << polygon.area() << std::endl; 
+                  << " area:" << polygon.area() << std::endl; 
     }
+    std::cout << std::endl;
 #endif
     calc_layers(polygons);
 
@@ -158,6 +163,7 @@ int main()
         std::cout << polygon;
         std::cout << std::endl;
     }
+    std::cout << std::endl;
 #endif
 
     std::map<size_t, std::vector<size_t>> group;
@@ -195,6 +201,18 @@ int main()
     write_polygons(file_out, polygons);
 
     file_out.close();
+
+#ifdef BL_DEBUG
+    /* checking the correctness of the calculation of edge cases */
+    int BIG = 1000000000;
+    Segment2D s0{ BIG + 2, BIG, BIG + 1, 0 };
+    Segment2D s1{ BIG + 2, BIG, BIG + 3, 0 };
+    Point2D p{ BIG + 2, BIG - 1 };
+    std::cout << std::endl;
+    std::cout << "s0 and p intersec:" << Polygon2D::is_intersec(p, s0) << std::endl;
+    std::cout << "s1 and p intersec:" << Polygon2D::is_intersec(p, s1) << std::endl;
+    std::cout << std::endl;
+#endif
 
     return 0;
 }

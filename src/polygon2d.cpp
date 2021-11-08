@@ -1,6 +1,4 @@
 #include "polygon2d.h"
-#include <iostream>
-#include <cmath>
 
 Polygon2D::Polygon2D() 
 {}

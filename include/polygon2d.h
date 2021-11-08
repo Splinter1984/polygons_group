@@ -1,5 +1,7 @@
 #pragma once 
 #include "segment2d.h"
+#include <iostream>
+#include <cmath>
 #define BL_DEBUG
 
 class Polygon2D
@@ -17,7 +19,8 @@ class Polygon2D
         Polygon2D(const Polygon2D& polygon);
         Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, 
                   const double area = .0, const size_t parent_id = 0, const double parent_area = .0);
-        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, const std::vector<Segment2D>::iterator& it_end, 
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
+                  const std::vector<Segment2D>::iterator& it_end, 
                   const double area = .0, const size_t parent_id = 0, const double parent_area = .0);
         
         size_t layer() const;
