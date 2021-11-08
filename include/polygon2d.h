@@ -6,24 +6,31 @@ class Polygon2D
 {
     private:
         size_t _id;
-        size_t _parent_id = 0;
         size_t _layer;
         std::vector<Segment2D> _border;
+        double _perimeter;
+        Polygon2D* _parent;
 
     public:
         Polygon2D();
         Polygon2D(const Polygon2D& polygon);
-        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border);
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, 
+                                const double perimeter = 0.0, const Polygon2D& parent = nullptr);
         Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
-                                      const std::vector<Segment2D>::iterator& it_end);
+                    const std::vector<Segment2D>::iterator& it_end, const double perimeter = 0.0, const Polygon2D& parent = nullptr);
         
         size_t layer() const;
         void set_layer(const size_t layer);
 
         size_t id() const;
 
+        /* the perimeter is a length of border */
+        double perimeter() const;
+        void set_perimeter(const double perimeter);
+
         /* the parent polygon is the polygon external to the current */
-        size_t parent_id() const;
+        Polygon2D* parent() const;
+        void set_parent(const Polygon2D& parent);
 
         /** layer value calculation
          * calculation of the polygon layer based on the analysis 
@@ -45,7 +52,6 @@ class Polygon2D
 
         friend std::ostream& operator<<(std::ostream& out, const Polygon2D& polygon); 
     
-    protected:
         /** ray entry calculation
          * the method looks count number of intersec ray and all segments in polygon
          * @param `point` 2d point as part of the polygon being tested
@@ -53,7 +59,7 @@ class Polygon2D
          * 
          * @return number of horizontal intersections of the ray from `point` to infinity
          */
-        size_t calc_intersec(const Point2D& point, const Polygon2D& polygon);
+        static size_t calc_intersec(const Point2D& point, const Polygon2D& polygon);
     
         /** check that ray intersec with segment
          * the method looks at a "ray" that starts at the spot under test and extends to infinity 
@@ -64,6 +70,6 @@ class Polygon2D
          * 
          * @return if intersection detected return `true` else `false`
          */
-        bool is_intersec(const Point2D& point, const Segment2D& segment);
+        static bool is_intersec(const Point2D& point, const Segment2D& segment);
 
 };
