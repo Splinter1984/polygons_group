@@ -1,21 +1,18 @@
 #include "polygon2d.h"
 #include <iostream>
-
-#define BL_RELEASE
-
-#define THRESHOLD 1e-008
+#include <cmath>
 
 Polygon2D::Polygon2D() 
 {}
 Polygon2D::Polygon2D(const Polygon2D& polygon)
-:Polygon2D(polygon.id(), polygon.layer(), polygon.border())
+:Polygon2D(polygon.id(), polygon.layer(), polygon.border(), polygon.area())
 {}
-Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border)
-:_id(id), _layer(layer), _border(border) 
+Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, const double area)
+:_id(id), _layer(layer), _border(border), _area(area)
 {}
 Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
-                                         const std::vector<Segment2D>::iterator& it_end)
-                                         :_id(id), _layer(layer), _border(it_begin, it_end) 
+                    const std::vector<Segment2D>::iterator& it_end, const double area)
+:_id(id), _layer(layer), _border(it_begin, it_end), _area(area)
 {}
 size_t Polygon2D::layer() const
 {
@@ -25,15 +22,40 @@ size_t Polygon2D::id() const
 {
     return _id;
 }
-size_t Polygon2D::parent_id() const
-{
-    return _parent_id;
-}
 void Polygon2D::set_layer(const size_t layer)
 {
     if (_layer == layer)
         return;
     _layer = layer;
+}
+double Polygon2D::area() const
+{
+    return _area;
+}
+void Polygon2D::set_area(const double area)
+{
+    if (_area == area)
+        return;
+    _area = area;
+}
+void Polygon2D::calc_area()
+{
+    double rv = .0;
+    double lv = .0;
+    for (auto segment: _border)
+    {
+        rv += segment.start().x()*segment.end().y();
+        lv += segment.start().y()*segment.end().x();
+    }
+    _area = .5 * std::abs(rv - lv);
+}
+Polygon2D* Polygon2D::parent() const
+{
+    return _parent;
+}
+void Polygon2D::set_parent(const Polygon2D& iparent)
+{
+    _parent = new Polygon2D(iparent);
 }
 
 bool Polygon2D::is_intersec(const Point2D& point, const Segment2D& segment)
@@ -64,7 +86,7 @@ size_t Polygon2D::calc_intersec(const Point2D& point, const Polygon2D& polygon)
     /* check the entire border of the polygon for intersection with the ray  */
     for (auto segment=polygon.border_begin(); segment != polygon.border_end(); segment++)
     {
-        if (is_intersec(point, *segment))
+        if (Polygon2D::is_intersec(point, *segment))
             count++;
     }
 
@@ -83,7 +105,7 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
             int point_id = 0;
             for (auto segment: _border)
             {
-                int intersec_count = calc_intersec(segment.start(), polygon);
+                int intersec_count = Polygon2D::calc_intersec(segment.start(), polygon);
 
                 /* if the number of intersections is even, this means that 
                     the ray went out of the segment's field of view to 
@@ -104,8 +126,18 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                 std::cout <<  std::endl;
             #endif
             /* the computation of the parent polygon is needed as additional grouping information */
-            if (intersec && polygon.id() > this->parent_id())
-                this->_parent_id = polygon.id();
+            if (intersec)
+            {
+                if (this->parent())
+                {
+                    std::cout << parent()->id() << " " <<parent()->area()<< std::endl;
+                    if (parent()->area() > polygon.area())
+                        set_parent(polygon);
+                }else{
+                    set_parent(polygon);
+                }
+                std::cout << parent()->id() << " " <<parent()->area()<< std::endl;
+            }
             
             /* the layer grows only if uncovered intersections are detected */
             layer += intersec? 1: 0;
@@ -134,7 +166,10 @@ Polygon2D& Polygon2D::operator=(const Polygon2D& polygon)
     if (this == &polygon)
         return *this;
     _layer = polygon.layer();
-    _border = polygon._border;
+    _border = polygon.border();
+    _id = polygon.id();
+    _parent = polygon.parent();
+    _area = polygon.area();
 
     return *this;
 }

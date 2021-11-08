@@ -1,6 +1,6 @@
 #pragma once 
 #include "segment2d.h"
-#define BL_RELEASE
+#define BL_DEBUG
 
 class Polygon2D
 {
@@ -8,29 +8,28 @@ class Polygon2D
         size_t _id;
         size_t _layer;
         std::vector<Segment2D> _border;
-        double _perimeter;
-        Polygon2D* _parent;
+        double _area;
+        Polygon2D* _parent = nullptr;
 
     public:
         Polygon2D();
         Polygon2D(const Polygon2D& polygon);
-        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, 
-                                const double perimeter = 0.0, const Polygon2D& parent = nullptr);
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, const double area = .0);
         Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
-                    const std::vector<Segment2D>::iterator& it_end, const double perimeter = 0.0, const Polygon2D& parent = nullptr);
+                    const std::vector<Segment2D>::iterator& it_end, const double area = .0);
         
         size_t layer() const;
         void set_layer(const size_t layer);
 
         size_t id() const;
 
-        /* the perimeter is a length of border */
-        double perimeter() const;
-        void set_perimeter(const double perimeter);
+        double area() const;
+        void set_area(const double area);
+        void calc_area();
 
         /* the parent polygon is the polygon external to the current */
         Polygon2D* parent() const;
-        void set_parent(const Polygon2D& parent);
+        void set_parent(const Polygon2D& iparent);
 
         /** layer value calculation
          * calculation of the polygon layer based on the analysis 
