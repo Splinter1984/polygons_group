@@ -131,6 +131,7 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
             #ifdef BL_DEBUG
                 std::cout <<  std::endl;
             #endif
+            
             /* the computation of the parent polygon is needed as additional grouping information */
             if (intersec && (_parent_area > polygon.area() || !_parent_id))
                 set_parent(polygon.id(), polygon.area());

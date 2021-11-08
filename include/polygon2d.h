@@ -27,11 +27,18 @@ class Polygon2D
 
         double area() const;
         void set_area(const double area);
+
+        /** calculate area of polygon
+         * calculation build on Gauss area formula
+         */
         void calc_area();
 
         /* the parent polygon is the polygon external to the current */
         void set_parent(const size_t id, const double area);
+
         size_t parent_id() const;
+        
+        /* the parent's area is needed to update the current parent correctly */
         double parent_area() const;
 
         /** layer value calculation
