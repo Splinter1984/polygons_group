@@ -7,12 +7,13 @@ Polygon2D::Polygon2D()
 Polygon2D::Polygon2D(const Polygon2D& polygon)
 :Polygon2D(polygon.id(), polygon.layer(), polygon.border(), polygon.area())
 {}
-Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, const double area)
-:_id(id), _layer(layer), _border(border), _area(area)
+Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border,
+                     const double area, const size_t parent_id, const double parent_area)
+:_id(id), _layer(layer), _border(border), _area(area), _parent_id(parent_id), _parent_area(parent_area)
 {}
-Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
-                    const std::vector<Segment2D>::iterator& it_end, const double area)
-:_id(id), _layer(layer), _border(it_begin, it_end), _area(area)
+Polygon2D::Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, const std::vector<Segment2D>::iterator& it_end, 
+                     const double area, const size_t parent_id, const double parent_area)
+:_id(id), _layer(layer), _border(it_begin, it_end), _area(area), _parent_id(parent_id), _parent_area(parent_area)
 {}
 size_t Polygon2D::layer() const
 {
@@ -49,13 +50,18 @@ void Polygon2D::calc_area()
     }
     _area = .5 * std::abs(rv - lv);
 }
-Polygon2D* Polygon2D::parent() const
+void Polygon2D::set_parent(const size_t id, const double area)
 {
-    return _parent;
+    _parent_id = id;
+    _parent_area = area;
 }
-void Polygon2D::set_parent(const Polygon2D& iparent)
+size_t Polygon2D::parent_id() const 
 {
-    _parent = new Polygon2D(iparent);
+    return _parent_id;
+}
+double Polygon2D::parent_area() const
+{
+    return _parent_area;
 }
 
 bool Polygon2D::is_intersec(const Point2D& point, const Segment2D& segment)
@@ -126,18 +132,8 @@ void Polygon2D::calc_layer(const std::vector<Polygon2D>& polygons)
                 std::cout <<  std::endl;
             #endif
             /* the computation of the parent polygon is needed as additional grouping information */
-            if (intersec)
-            {
-                if (this->parent())
-                {
-                    std::cout << parent()->id() << " " <<parent()->area()<< std::endl;
-                    if (parent()->area() > polygon.area())
-                        set_parent(polygon);
-                }else{
-                    set_parent(polygon);
-                }
-                std::cout << parent()->id() << " " <<parent()->area()<< std::endl;
-            }
+            if (intersec && (_parent_area > polygon.area() || !_parent_id))
+                set_parent(polygon.id(), polygon.area());
             
             /* the layer grows only if uncovered intersections are detected */
             layer += intersec? 1: 0;
@@ -168,7 +164,8 @@ Polygon2D& Polygon2D::operator=(const Polygon2D& polygon)
     _layer = polygon.layer();
     _border = polygon.border();
     _id = polygon.id();
-    _parent = polygon.parent();
+    _parent_id = polygon.parent_id();
+    _parent_area = polygon.parent_area();
     _area = polygon.area();
 
     return *this;

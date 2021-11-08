@@ -9,14 +9,16 @@ class Polygon2D
         size_t _layer;
         std::vector<Segment2D> _border;
         double _area;
-        Polygon2D* _parent = nullptr;
+        size_t _parent_id;
+        double _parent_area;
 
     public:
         Polygon2D();
         Polygon2D(const Polygon2D& polygon);
-        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, const double area = .0);
-        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, 
-                    const std::vector<Segment2D>::iterator& it_end, const double area = .0);
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>& border, 
+                  const double area = .0, const size_t parent_id = 0, const double parent_area = .0);
+        Polygon2D(const size_t id, const size_t layer, const std::vector<Segment2D>::iterator& it_begin, const std::vector<Segment2D>::iterator& it_end, 
+                  const double area = .0, const size_t parent_id = 0, const double parent_area = .0);
         
         size_t layer() const;
         void set_layer(const size_t layer);
@@ -28,8 +30,9 @@ class Polygon2D
         void calc_area();
 
         /* the parent polygon is the polygon external to the current */
-        Polygon2D* parent() const;
-        void set_parent(const Polygon2D& iparent);
+        void set_parent(const size_t id, const double area);
+        size_t parent_id() const;
+        double parent_area() const;
 
         /** layer value calculation
          * calculation of the polygon layer based on the analysis 

@@ -71,8 +71,7 @@ void calc_layers(std::vector<Polygon2D>& polygons)
            polygon layer increases in proportion to the number of bounding polygons*/
         polygon->calc_layer(polygons);
         #ifdef BL_DEBUG
-            size_t parent_id = polygon->parent()? polygon->parent()->id(): 0;
-            std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << " parent: " << parent_id << std::endl;
+            std::cout << "polygon: " << polygon->id() << " layer: "<< polygon->layer() << " parent: " << polygon->parent_id() << std::endl;
         #endif
     }
 }
@@ -112,11 +111,8 @@ void build_group(const std::vector<Polygon2D>& polygons, std::map<size_t, std::v
             tmp_group.push_back(polygon.id());
             for (const auto& item: polygons)
             {
-                if (item.parent())
-                {
-                    if (item.parent()->id() == polygon.id())
-                        tmp_group.push_back(item.id());
-                }
+                if (item.parent_id() == polygon.id())
+                    tmp_group.push_back(item.id());
             }
             group.insert(std::pair<size_t, std::vector<size_t>>(group_num, tmp_group));
         }
@@ -155,9 +151,8 @@ int main()
     std::cout << std::endl;
     for (const auto& polygon: polygons)
     {
-        size_t parent_id = polygon.parent()? polygon.parent()->id(): 0;
         std::cout << "#polygon:" << polygon.id() 
-                  << " #parent:" << parent_id
+                  << " #parent:" << polygon.parent_id()
                   << " #layer:" << polygon.layer() << std::endl;
         
         std::cout << polygon;
