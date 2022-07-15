@@ -34,4 +34,4 @@
 # Build folders
 
 **/build
-.vscode/**
+.vscode
